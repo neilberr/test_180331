@@ -1,0 +1,43 @@
+ 
+*don't overwrite market data if timestamp later
+*maintain first and latest update in market header.
+
+ - find/use actual in-play time
+ 
+/*1. get start and end times
+/*2. fill in counter points
+/*  - check if playerA and playerB are in sync - they are really so create counter points only if other does not exist
+ *3. use them to select by coverage
+rule 1: get rid of all non in-play = -2405 but none of them selected as below since all have in-play transactions = 0.
+rule 2: nothing over 300mins = -1099 only
+rule 3: include anything between 60 and 40mins where less than 5 minutes are missing (redundant for rule 4) = 514
+rule 4: of the remaining, take everything where less than 5 minutes are missing = 6125.
+rule 5: then take everything with > 90% coverage = 3379 -> 80% = a further 3239
+ => total total = 10000 plus a spare 3239 of slightly dodgy ones
+ - of which 6640 are in because of rules 3 and 4 (>40mins and <5mins missing)and 3379 for rule 5 (>90% coverage)
+    
+ 4. calculate win % vs start odds (calculate as average of pre-start and compare with first post-start]
+  - correlate with playername
+ 5. test hypothesis of fast starting outsider
+ 5a. develop a test of volatility - what predicts it (see 7.) - playername!!!
+ 5b. get a source for scores.
+ 5c. correlate my results (profit/loss) against start price, 
+ 6. correlate regression of current match up to now against all previous, how well do they predict the next move? (break/break back/win set uneventfully)
+  - use a hold out set to test predictive quality, what features (starting price, length, individual player) 
+ 7. investigate all my known data (start time, time of year(==tournament?), day of week (==round: Fridays are QFs, Mondays are R1s!! player name)
+  - use AI to test significance of all of these in predicting win but also in predicting in-play patterns eg win first set, break back)
+ 8. kick off a data collection app which can run independent of a browser and cherry pick high enough volume matches
+ 9. can get serve stats vs time???
+ 10. google for live tennis scores +API (XML...)
+ 11. get a list of mens and womens because the results will be different
+
+hypotheses
+since I'm looking for frequency (of serve, point (regression to mean) and momentum swing (trend following) 
+maybe a fourier transform would show how long each lasts (frequencies)? and when it can be expected to reverse...
+ - you'd need point by point data though => wait for my data to come on tap
+  
+hmmm - live xml stats ($800 per year(!)):
+ - http://www.goalserve.com/samples/tennis_schedules.xml
+ - seems poss: https://www.npmjs.com/package/sports-live 
+ 
+ 
