@@ -119,10 +119,22 @@ public class Test {
 				Utils.utilityPrint(dataSet, selectedFile);
 				selectedFile.close();
 			}
-			//That's the data selected, now analyse the pants off it
-			if (yourWishMyLord == "Analyse" || yourWishMyLord == "All") {
-				System.out.println("I analyse...");
-			}
+
+			//That's the data created, now analyse it
+			else if (yourWishMyLord == "Analyse") {
+				fin = new FileInputStream(SELECTED_FILE);
+				fout = new FileOutputStream(RESULTS_FILE);
+				BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fout));
+
+				//read the data that was created
+				data = readDataFromFile(br);
+				br.close();
+
+				//analyse and output index of results
+				Analyse.analyse(data);
+				bw.close();
+			}	
 
 		} catch (IOException e) {
 			e.printStackTrace();
