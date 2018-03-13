@@ -1,0 +1,76 @@
+ 
+New:
+*don't overwrite market data if timestamp later
+*maintain first and latest update in market header(?)
+
+Select:
+rule 1: get rid of all non in-play = -2405 but none of them selected as below since all have in-play transactions = 0.
+rule 2: nothing over 300mins = -1099 (only)
+rule 3: include anything between 60 and 40mins where less than 5 minutes are missing (redundant for rule 4) = 514
+rule 4: of the remaining, take everything where less than 5 minutes are missing = 6125.
+rule 5: then take everything with > 90% coverage = 3379 (-> 80% = a further 3239)
+ => total total = 10000, with 3239 lower quality ones in reserve
+ - of which 6640 are in because of rules 3 and 4 (>40mins and <5mins missing)and 3379 for rule 5 (>90% coverage)
+    
+*4. calculate win % vs start odds (calculate as average of pre-start and compare with first post-start]
+ - well, lay everything from 1.1 to 1.4 gives an average return of 4.86%
+  - *paper trade this (using actual in-play volumes available)
+  - there are lots of potential pitfalls 
+   - analysis is done only on 10000 selected markets, how will you exclude non-selected ones when you are in play and can't see the length
+   - how accurate is the sp calculation, could it be deflated by early outliers?
+    - paper trade will show it, do it via API to get actual sps and volumes - then keep the answer to compare with sp calc when historical data comes on
+       
+  *correlate with playername
+  *print a league table of played-win-lose etc.
+  *load up my results and have a look
+   - print a league table of my profit per player, look for outliers, are the volumes statistically significant?
+  *how many of my markets have been excluded for being too sparse? - hopefully none!
+  *does it matter if a player is on a win streak? - ie does it predict when he will win at > frequency than his starting price
+  *to calculate predictive significance of starting price, first put markets into buckets and calculate frequency of each bucket
+   - risk model needs to take into account the spread so 1.14 is really 1.135 to 1.145, compare frequency with the less optimal one. 
+  
+ 5. test hypothesis of fast starting outsider
+ 5a. develop a test of volatility - what predicts it (see 7.) - playername!!!
+ 5b. get a source for scores.
+ 5c. correlate my results (profit/loss) against start price, 
+ 6. correlate regression of current match up to now against all previous, how well do they predict the next move? (break/break back/win set uneventfully)
+  - use a hold out set to test predictive quality, what features (starting price, length, individual player) 
+ 7. investigate all my known data (start time, time of year(==tournament?), day of week (==round: Fridays are QFs, Mondays are R1s!! player name)
+  - use AI to test significance of all of these in predicting win but also in predicting in-play patterns eg win first set, break back)
+ 8. kick off a data collection app which can run independent of a browser and cherry pick high enough volume matches
+ 9. can get serve stats vs time???
+ 10. google for live tennis scores +API (XML...)
+ 11. get a list of mens and womens because the results will be different
+
+for a regression analysis, we're looking for a formula which predicts the series, right? - ok so how about a 3 frequency harmonic? - will have to:
+ - a. adjust the phase to get in sync with the curve
+ - b. be able to move gradually by some kind of moving average to cope with breaks - no use having it oscillate away at 1.45-1.55 when the data is at 2.4-2.6
+  - ok, investigate it over shorter periods and espcecially in between singularities
+  - there is an investment pattern for this = like a cycle between resistance levels and then a breakout???
+
+there is something about Dimitrov eg, which does not match my strategy
+ - find out (if that's true and if so) what it is - volatility yes but any other pattern especially early in a match which can predict my result?
+  - obviously code this as an early warning as the match proceeds, can be implemented in the risk model, 
+  - even just warn on player names if that turns out to be significant.
+
+hypotheses
+since I'm looking for frequency (of serve, point (regression to mean) and momentum swing (trend following) 
+maybe a fourier transform would show how long each lasts (frequencies)? and when it can be expected to reverse...
+ - you'd need point by point data though => wait for my data to come on tap
+  
+hmmm - live xml stats ($800 per year(!)):
+ - http://www.goalserve.com/samples/tennis_schedules.xml
+ - seems poss: https://www.npmjs.com/package/sports-live 
+ 
+ 
+how to remove outliers using R:
+lowerq = quantile(data)[2]
+upperq = quantile(data)[4]
+iqr = upperq - lowerq #Or use IQR(data)
+Compute the bounds for a mild outlier:
+mild.threshold.upper = (iqr * 1.5) + upperq
+mild.threshold.lower = lowerq - (iqr * 1.5)
+Any data point outside (> mild.threshold.upper or < mild.threshold.lower) these values is a mild outlier
+To detect extreme outliers do the same, but multiply by 3 instead:
+extreme.threshold.upper = (iqr * 3) + upperq
+extreme.threshold.lower = lowerq - (iqr * 3)
